@@ -1,0 +1,132 @@
+启动docker systemctl start docker
+暂停 docker systemctl stop docker
+重启 systemctl restart docker
+
+查看镜像Docker images
+搜索镜像 docker search 镜像名称
+拉取镜像 docker pull 镜像名称
+删除镜像 docker rmi  镜像id
+删除所有镜像 docker rmi `docker images  -q`
+
+镜像 1    n  容器
+查看正在运行的容器 docker ps 
+查看所有容器 docker ps  -a
+
+
+
+
+交互式运行 
+Docker run -it --name=mycentos centos:7  /bin/bash
+Exit  退出
+容器退出自动停止
+
+守护式运行
+
+Docker run -di --name=mycentos2 centos:7
+Docker exec -it mycentos2 /bin/bash 
+Exit
+退出后仍在运行
+
+Docker stop 容器名称/id
+Docker start 容器名称/id
+
+拷贝到容器
+
+Docker cp 文件名 容器名/id :/user/local 
+
+Docker cp aaa mycentos2:/usr/local
+
+
+从容器中拷贝到外面
+Docker cp 容器名称:容器目录 需要拷贝的文件或目录
+Docker cp mycentos2:/usr/local/aaa  bbb
+
+
+
+目录挂载
+宿主机和容器中的文件相关联一致
+-v 
+Docker 宿主机目录:容器目录
+Docker run -di -v /usr/local/myhtml:/usr/locak/myhtml --name=mycentos3 centos:7
+
+查看容器ip地址
+Docker inspect --format=’{{.NetworkSetting.IpAddress}}’ 容器名称/id
+
+删除容器
+Docker rm 容器名称
+
+迁移和备份
+将容器保存为镜像
+docker commit mynginx mynginx1
+ B
+
+
+生成镜像
+docker commit 容器名 镜像名
+
+docker save -o 文件名 镜像名
+Docker save -o nginx.tar  nginx1
+
+先删除容器再删除镜像
+恢复镜像
+Docker load -i 文件名
+Docker load -i nginx.tar
+
+
+私有仓库
+Docker pull registry
+Docker run  - di --name=registry -p 5000:5000
+ 
+
+
+
+
+
+
+
+
+
+dockerfile 创建jdk8脚本
+mkdir -p /usr/local/dockerJDK8
+jdk1.8的压缩包
+vi Dockerfile
+	FORM centos7
+	MAINTAINER whk  
+	WORKDIR /usr
+	RUN mkdir /usr/loacl/java
+	ADD 压缩文件名 /usr/local/java
+	ENV JAVA_HOME /usr/loacl/java/jdk1.8.0_171
+	ENV JRE_HOME $JAVA_HOME/jre
+	ENV CLASSPATH $JAVA_HOME/bin/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH
+	ENV PATH $JAVA_HOME/bin:$PATH
+
+
+docker build -t='jdk1.8' .       //. 代表当前文件夹  jdk1.8 镜像名
+
+私有仓库
+docker pull registry 
+docker run -di --name=registry -p 5000:5000 registry
+vi /etc/docker/daemon.json
+         {
+ 	"registry-mirrors":["https://docker.mirrors.ustc.edu.cn"],
+	"insecure-registries":["192.168.184.141:5000"]       //信任本机地址
+          }
+
+将镜像上传到私服
+docker tag 镜像名 192.168.184.141:5000/镜像名
+docker start registry
+docker push 192.168.184.141:5000/镜像名
+
+
+私服下载
+docker pull 192.168.184.141:5000/镜像名
+
+
+
+
+
+
+
+
+
+
